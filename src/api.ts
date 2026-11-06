@@ -37,3 +37,15 @@ export async function workshopFetch(url:string,init?:RequestInit):Promise<Respon
  return Response.json(await request());
  }catch(e){return Response.json({error:e instanceof Error?e.message:'Unable to connect to the workshop'},{status:400})}
 }
+
+/** Authenticated byte-range reads: credentials remain in headers; no public/signed audio URLs. */
+export async function fetchPrivateStem(file:{path:string},init?:RequestInit):Promise<Response>{
+ const {data:{session},error}=await supabase.auth.getSession();
+ if(error||!session)throw Error('Sign in again to stream rehearsal audio.');
+ const headers=new Headers(init?.headers);
+ headers.set('apikey',publishableKey);headers.set('Authorization','Bearer '+session.access_token);
+ const path=file.path.split('/').map(encodeURIComponent).join('/');
+ const response=await globalThis.fetch(projectUrl+'/storage/v1/object/authenticated/workshop-files/'+path,{...init,headers,cache:'no-store'});
+ if(response.status===401||response.status===403){void response.body?.cancel();throw Error('Access to this stem was denied. Check your membership or sign in again.')}
+ return response;
+}
