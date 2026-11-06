@@ -4,7 +4,7 @@ Responsive GitHub Pages frontend with Supabase accounts, server-enforced owner a
 
 ## First launch
 
-1. GitHub Settings → Pages → Source: **GitHub Actions**. GitHub currently requires a paid plan for Pages from this private repository; alternatively, explicitly choose to make this source repository public. Publishing the interface does not publish band records or audio.
+1. GitHub Pages is configured to publish with **GitHub Actions**. The source repository was made public with the owner's explicit approval. Publishing the interface does not publish band records or audio.
 2. Supabase Auth Site URL and Redirect URL: **https://leaving0zero.github.io/Workshop/**. These have been configured.
 3. Create an account at the deployed portal using **chris@leavingzero.com**, choose your own password, and confirm the email. Only this confirmed address receives owner privileges. No owner password or login was created for you.
 4. Invite other members to visit the same address, register, confirm email, then wait for your approval under Members. Guest accounts can read but not change shared records.
