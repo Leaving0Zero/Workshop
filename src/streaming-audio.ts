@@ -97,7 +97,7 @@ export class StreamingRehearsal{
    result.push({buffer,timestamp:at,duration:until-at});
   }return result;
  }
- setMix(mix:Mix){this.mix=mix;const solo=Object.values(mix).some(v=>v.solo);for(const [id,node] of this.channels){const m=mix[id]||{};node.gain.gain.value=m.mute||(solo&&!m.solo)?0:clamp(m.volume??.7,0,1);node.pan.pan.value=clamp(m.pan??0,-1,1)}}
+ setMix(mix:Mix){this.mix=mix;const solo=this.stems.some(stem=>mix[stem.file.id]?.solo);for(const [id,node] of this.channels){const m=mix[id]||{};node.gain.gain.value=m.mute||(solo&&!m.solo)?0:clamp(m.volume??.7,0,1);node.pan.pan.value=clamp(m.pan??0,-1,1)}}
  setPitch(pitch:number){this.semitones=pitch;if(this.bus)this.bus.pitchSemitones.value=pitch}
  setLoop(loop:{on:boolean;a:number;b:number}){this.loop=loop}
  isPlaying(){return this.wanted}
