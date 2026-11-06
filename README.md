@@ -68,7 +68,7 @@ All stems must share the same DAW start point. Every piece is scheduled against 
 
 Speed and pitch remain independent: one stereo SoundTouch AudioWorklet processes the summed per-stem gain/pan mix, with pitch from -12 to +12 semitones. Speed changes retain the selected key. There is a small processing delay and large shifts can create audible artifacts. Loop boundaries are not sample-accurate. Wave bars are illustrative. Authorized listeners can still download or record audio; this is not DRM.
 
-Account suspension does not remove audio already downloaded into a listener's memory. Clear/close the page to discard a local session. No permanent account deletion, malware scanning, resumable uploads or file replacement/deletion UI is implemented.
+Account suspension does not remove audio already downloaded into a listener's memory. Clear/close the page to discard a local session. No permanent account deletion, malware scanning, resumable uploads or file replacement or permanent file-purge UI is implemented.
 
 ## Key analysis and pitch controls
 
@@ -96,3 +96,11 @@ Streaming verification: synthetic browser checks prepared 64 four-minute mono WA
 Buffering update: bounded 512 KB request-cache regression tests cover range reuse, concurrent deduplication, exact byte slicing, remaining-file prefetch, memory eviction, disposal and rejection of full-file responses. Catalog-key tests cover sharps/flats, minor keys, modes, slash roots, negative shifts and octave wrapping.
 
 The revised 64-stem browser stress check passes with a larger startup cushion, a forced stall longer than that cushion, synchronized refill/resume, and approximately 154 MB peak scheduled PCM. It also verifies that a brief next-segment delay does not stop playback. The key display was checked with Bb minor → C minor at +2 semitones.
+
+## Owner-only stem removal
+
+In Rehearsal, select a song and use Remove stem on a channel. A filename confirmation precedes removal. Only the verified band owner sees removal/recovery controls; the server independently rejects other members, guests and anonymous requests. Removed stems disappear from the active file list and cannot be read through private Storage, including by their uploader. The owner can restore them under Removed stems. Both actions are audited and idempotent.
+
+This is recoverable removal: original private audio is retained and still counts toward storage. Existing audio already cached on another device cannot be erased remotely; active clients refresh their file list every 60 seconds or on reload. Show files are excluded from this action. No physical object purge is exposed. The migration in supabase/migrations/20261106224324_owner_stem_removal.sql has been applied remotely; do not replay it. Rolled-back tests/stem-removal.sql checks role restrictions, recovery privacy, direct Storage access denial, restoration, idempotency and audit events using synthetic accounts/object metadata.
+
+Validation: owner confirmation/cancel, removal, restoration, and the absence of member removal/recovery controls were checked in a browser using fixture data. Security advisors report no database findings; the project has an existing Auth notice that leaked-password protection is disabled: https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection .
