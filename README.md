@@ -5,7 +5,7 @@ Responsive GitHub Pages frontend with Supabase accounts, server-enforced owner a
 ## First launch
 
 1. GitHub Pages is configured to publish with **GitHub Actions**. The source repository was made public with the owner's explicit approval. Publishing the interface does not publish band records or audio.
-2. Supabase Auth Site URL and Redirect URL: **https://leaving0zero.github.io/Workshop/**. These have been configured.
+2. Portal address and Supabase Auth Site URL: **https://workshop.leavingzero.com/**. This exact address is also an allowed Auth redirect. The original GitHub Pages redirect remains allowed for earlier links.
 3. Create an account at the deployed portal using **chris@leavingzero.com**, choose your own password, and confirm the email. Only this confirmed address receives owner privileges. No owner password or login was created for you.
 4. Invite other members to visit the same address, register, confirm email, then wait for your approval under Members. Guest accounts can read but not change shared records.
 5. If confirmation mail is rejected for non-team addresses, configure a production SMTP provider in Supabase Auth → Emails. Supabase's default mail service is restricted. Do not disable email verification.
@@ -44,7 +44,7 @@ Node 22.13+ required.
     npm run dev
     npm run build
 
-Local URL: http://127.0.0.1:5173/Workshop/
+Local URL: http://127.0.0.1:5173/
 
 Only publishable project configuration is included in src/config.ts; optional VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY overrides are documented in .env.example. VITE_ values are public. Never use a service-role/secret key there.
 
