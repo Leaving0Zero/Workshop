@@ -1,0 +1,1 @@
+export class StemCache {constructor(fetcher:(file:any,init:RequestInit)=>Promise<Response>,maxBytes?:number,blockSize?:number);bytes:number;read(file:any,start:number,end:number):Promise<Uint8Array>;prefetch(files:any[]):Promise<void>;dispose():void;}

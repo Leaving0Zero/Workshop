@@ -20,30 +20,33 @@ function fakeFetch(index:number):typeof fetch{return async(_url,init)=>{
 const nativeFetch=globalThis.fetch.bind(globalThis);
 (supabase.auth as any).getSession=async()=>({data:{session:{access_token:'local-fixture-token'}},error:null});
 globalThis.fetch=(async(input:any,init:any)=>String(input).includes('/storage/v1/object/authenticated/workshop-files/virtual/')?fakeFetch(0)(input,init):nativeFetch(input,init)) as typeof fetch;
-createRoot(document.getElementById('root')!).render(<main style={{maxWidth:1100,margin:'20px auto',padding:16}}><Player files={files} song="stream-fixture" save={async()=>true}/></main>);
+createRoot(document.getElementById('root')!).render(<main style={{maxWidth:1100,margin:'20px auto',padding:16}}><Player catalogKey="Bb minor" files={files.slice(0,22)} song="stream-fixture" save={async()=>true}/></main>);
 document.getElementById('run')!.onclick=async()=>{
  const result=document.getElementById('result')!,context=new AudioContext();await context.resume();result.textContent='Preparing 64 virtual four-minute stems…';
  const engine=new StreamingRehearsal(files,file=>fakeFetch(+file.id.split('-')[1]));
  try{
- const Node=await registerPitch(context);await engine.prepare();
+ const Node=await registerPitch(context);await engine.prepare((n,total)=>result.textContent="Preparing "+n+" / "+total+" stems; building startup cushion…");result.textContent="Testing larger cushion and stall recovery…";
  if(engine.stems.length!==64)throw Error('Not all stems prepared');
  if(served>=size*64/4)throw Error('Too much audio fetched during preparation');
  const lines=['PASS: 64 full-length virtual stems prepared without whole-file PCM decoding.'];
  const starts:number[]=[];const create=context.createBufferSource.bind(context);context.createBufferSource=()=>{const source=create(),start=source.start.bind(source);source.start=((...args:any[])=>{starts.push(args[0]);return start(...args as [number,number,number])}) as typeof source.start;return source};
  engine.setMix(Object.fromEntries(files.map(f=>[f.id,{mute:true}])));
- let stalled=false,bufferEvents=0,maxPCM=0;const read=engine.stems[0].read.bind(engine.stems[0]);engine.stems[0].read=async(start,end,valid)=>{if(start>=engine.segmentSeconds&&!stalled){stalled=true;await new Promise(r=>setTimeout(r,3000))}return read(start,end,valid)};
+ let stalled=false,bufferEvents=0,maxPCM=0;const read=engine.stems[0].read.bind(engine.stems[0]);engine.stems[0].read=async(start,end,valid)=>{if(start>=engine.segmentSeconds&&!stalled){stalled=true;await new Promise(r=>setTimeout(r,(engine.initialSeconds+3)*1000))}return read(start,end,valid)};
  engine.onState=s=>{if(s.buffering)bufferEvents++;maxPCM=Math.max(maxPCM,engine.scheduledDecodedBytes())};
  void engine.play(context,Node);
  await new Promise(r=>setTimeout(r,2200));
+ if(context.state!=='running'||engine.position()<1)throw Error('Initial cushion failed to cover a brief loading delay');
+ lines.push('PASS: enlarged startup cushion covers a slow next segment without stopping.');
+ await new Promise(r=>setTimeout(r,engine.initialSeconds*1000));
  const frozen=context.state==='suspended',position=engine.position();
  await new Promise(r=>setTimeout(r,350));
  if(!frozen||Math.abs(engine.position()-position)>.03)throw Error('Clock did not pause for buffering');
  lines.push('PASS: slow-stem fetch pauses the shared clock; tracks cannot drift apart.');
- await new Promise(r=>setTimeout(r,2300));
+ await new Promise(r=>setTimeout(r,3500));
  if(context.state!=='running'||!engine.isPlaying())throw Error('Playback did not resume after buffering');
  const earliest=Math.min(...starts),sameStart=starts.filter(s=>Math.abs(s-earliest)<1e-7).length;
  if(sameStart<64)throw Error('Stems were not scheduled together');
- if(maxPCM>130*1024*1024)throw Error('Scheduled PCM grew beyond the rolling budget: '+maxPCM);
+ if(maxPCM>220*1024*1024)throw Error('Scheduled PCM grew beyond the rolling budget: '+maxPCM);
  lines.push('PASS: '+sameStart+' stems scheduled on the exact same audio-clock start.');
  lines.push('PASS: peak scheduled decoded audio '+(maxPCM/1024/1024).toFixed(1)+' MB for '+(size*64/1024/1024).toFixed(0)+' MB of source audio.');
  engine.pause();engine.seek(120);if(Math.abs(engine.position()-120)>.001)throw Error('Seek failed');

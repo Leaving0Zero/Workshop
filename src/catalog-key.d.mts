@@ -1,0 +1,1 @@
+export function transposeCatalogKey(value:unknown,semitones?:number):string|null;
