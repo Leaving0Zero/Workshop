@@ -1,0 +1,12 @@
+Rehearsal pitch and tempo processing uses SoundTouchJS:
+  @soundtouchjs/audio-worklet 2.1.1
+  @soundtouchjs/core 2.1.1
+  @soundtouchjs/worklet-base 2.1.1
+  @soundtouchjs/interpolation-strategy-lanczos 2.1.1
+Copyright Steve 'Cutter' Blades and the SoundTouchJS contributors.
+License: Mozilla Public License 2.0 (included in licenses/SoundTouch-MPL-2.0.txt).
+Unmodified upstream source: https://github.com/cutterbl/SoundTouchJS
+Packages and corresponding versions: https://www.npmjs.com/org/soundtouchjs
+
+Key estimation uses local spectral chroma and major/minor pitch-class profiles
+from Krumhansl and Kessler (1982). It is an estimate, not a definitive musical analysis.

@@ -16,7 +16,7 @@ The interface is publicly downloadable. Band records, files, roster emails, audi
 
 - Shared UTC calendar: rehearsals, gigs, unavailability, local time display and yes/maybe/no RSVPs.
 - Per-user revocable iCal subscription links for Apple, Google and Outlook, plus .ics snapshot export. Calendar changes are read-only subscriptions and refresh at each app's own polling interval.
-- Song catalog, secure stem uploads, synchronized multi-channel Web Audio mixer, mute/solo/volume/pan, transport/seek/loop/speed and personal mix presets.
+- Song catalog, secure stem uploads, synchronized multi-channel Web Audio mixer, mute/solo/volume/pan, transport/seek/loop/speed, independent semitone pitch shifting, local key estimation, and personal mix presets.
 - Ordered, versioned setlists with previous revisions; rehearsal notes.
 - Suggestions/comments/status, member-created polls/deadlines with one changeable vote per member.
 - Tasks, gear/patch notes, secure stage/show files, shared USD financial ledger.
@@ -62,9 +62,15 @@ Google OAuth two-way sync is not implemented. It requires a Google OAuth client/
 
 Stems must share the same DAW start point. All decoded sources use one AudioContext clock. Playback fetches private files with the current user's session and retains decoded audio in browser memory. Authorized listeners can still download or record audio; this is not DRM.
 
-40 MB per uploaded file, 120 MB combined source data per player load. Browser decode support varies. Speed changes pitch; pitch-preserving time stretching and seamless sample-accurate loop boundaries are not implemented. Wave bars are illustrative, not analyzed waveforms. Large multitrack sessions need a future streaming/worklet player. Real band stems still need listening tests on the band's devices.
+40 MB per uploaded file, 120 MB combined source data per player load, and a 384 MB decoded-audio memory cap. Browser decode support varies. Speed and pitch are independent: a stereo SoundTouch AudioWorklet processes the combined stem mix, with pitch from -12 to +12 semitones. Speed changes retain the selected key. There is a small processing delay and large shifts can create audible artifacts. Loop boundaries are not sample-accurate. Wave bars are illustrative, not analyzed waveforms. Large multitrack sessions need a future streaming/worklet player. Real band stems still need listening tests on the band's devices.
 
 Account suspension does not remove audio already downloaded into a listener's memory. Clear/close the page to discard a local session. No permanent account deletion, malware scanning, resumable uploads or file replacement/deletion UI is implemented.
+
+## Key analysis and pitch controls
+
+Loading stems starts key estimation in a dedicated browser worker. At most 36 seconds of representative audio from across the song are sampled, downmixed, and compared against major/minor pitch-class profiles. Private audio never leaves the browser for analysis. The estimated original and shifted playback key are shown with match strength and an alternative candidate. Silence, a single note, or weak tonal material may have no reliable key. Relative major/minor, modal rock, unusual tuning, and key changes can be ambiguous: check by ear and retain the manually entered catalog key as your canonical reference. The analyzer does not overwrite the catalog.
+
+Pitch and speed are included in personal mix presets. Browsers must support AudioWorklet and Web Workers; processor scripts are bundled on the same site, not loaded from a third-party CDN. SoundTouchJS license and source notices are included under public/. Audio tests use synthetic tones and chord progressions; real band stems still require listening tests.
 
 ## Other limits
 
