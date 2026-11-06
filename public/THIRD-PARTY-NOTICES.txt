@@ -12,7 +12,7 @@ Key estimation uses local spectral chroma and major/minor pitch-class profiles
 from Krumhansl and Kessler (1982). It is an estimate, not a definitive musical analysis.
 
 Stream demuxing and incremental audio decoding use unmodified Mediabunny 1.65.2.
-Copyright (c) 2025-present Vanilagy and contributors.
+Copyright (c) 2026-present, Vanilagy and contributors.
 License: Mozilla Public License 2.0 (licenses/Mediabunny-MPL-2.0.txt).
 Corresponding source: https://github.com/Vanilagy/mediabunny/tree/v1.65.2
 Package: https://www.npmjs.com/package/mediabunny/v/1.65.2
